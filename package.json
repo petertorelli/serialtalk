@@ -1,0 +1,16 @@
+{
+  "name": "emon2",
+  "version": "1.0.0",
+  "description": "Node.JS test interface to Emon2 Atmel Power Debugger",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Peter J. Torelli",
+  "license": "ISC",
+  "dependencies": {
+    "serialport": "^4.0.1",
+    "sprintf": "^0.1.5",
+    "yargs": "^7.0.2"
+  }
+}
