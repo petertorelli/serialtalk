@@ -74,6 +74,12 @@ function processLine(port) {
 
 if (argv.list) {
 	getPortsP().then(ports => {
+		console.log(sprintf('%-30s %10s %10s %s', 
+			'manufacturer',
+			'vendorId',
+			'productId',
+			'comName'
+		));
 		ports.forEach(portObj => {
 			if (portObj.manufacturer) {
 				console.log(sprintf('%-30s %10s %10s %s', 
