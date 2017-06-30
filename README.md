@@ -17,7 +17,8 @@ Options:
 To list all devices, use `--list`, like so:
 
 ~~~
-% ./main.js --list
+% ./main.js -l
+manufacturer                     vendorId  productId comName
 ?                                       ?          ? /dev/cu.Bluetooth-Incoming-Port
 STMicroelectronics                 0x0483     0x374b /dev/cu.usbmodem1423
 ~~~
