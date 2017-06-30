@@ -23,8 +23,6 @@ manufacturer                     vendorId  productId comName
 STMicroelectronics                 0x0483     0x374b /dev/cu.usbmodem1423
 ~~~
 
-The second column is the PID.
-
 Connect using the port name like this:
 
 ~~~
