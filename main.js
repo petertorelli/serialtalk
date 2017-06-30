@@ -63,9 +63,9 @@ if (argv.list) {
 				));
 			}
 		});
+		process.exit(0);
 	}).catch(err => {
 		console.error('Error: ' + err);
-		process.exit(0);
 	});
 } else if (argv.pid) {
 	getPortsP()
@@ -83,7 +83,10 @@ if (argv.list) {
 			}
 		});
 	})
-	.catch(err => { console.error('Error: ' + err) });
+	.catch(err => { 
+		console.error('Error: ' + err);
+		process.exit(1);
+	});
 }
 
 function getPortsP() {
