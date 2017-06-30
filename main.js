@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 const serialport = require('serialport');
 const sprintf = require('sprintf');
 const readline = require('readline');
@@ -8,6 +10,8 @@ const rl = readline.createInterface({
     output: process.stdout,
     prompt: '',
 });
+
+let port; // forgot how to pass data through promise chains
 
 const argv = require('yargs')
 	.option('c', {
@@ -29,6 +33,12 @@ const argv = require('yargs')
 		describe: 'Connect to the first product ID found that matches',
 		nargs: 1,
 	})
+	.option('n', {
+		alias: 'name',
+		type: 'string',
+		describe: 'Connect to actual port name',
+		nargs: 1,
+	})
 	.option('l', {
 		alias: 'list',
 		type: 'boolean',
@@ -46,6 +56,21 @@ const argv = require('yargs')
 	.help('h')
 	.alias('h', 'help')
 	.argv;
+
+
+function processLine(port) {
+	rl.on('line', (line) => {
+		if (line === 'exit' || line === 'q') {
+			port.close();
+			process.exit(0);
+		} else {
+			port.write(line)
+			if (argv.crlf) { 
+				port.write('\r\n');
+			}
+		}
+	});
+}
 
 if (argv.list) {
 	getPortsP().then(ports => {
@@ -67,22 +92,21 @@ if (argv.list) {
 	}).catch(err => {
 		console.error('Error: ' + err);
 	});
+} else if (argv.pid && argv.name) {
+	console.error('--pid and --name are mutually exclusive');
+	process.exit(1);
 } else if (argv.pid) {
 	getPortsP()
 	.then(ports => connectPortP(ports, argv.pid, argv.baud))
-	.then(port => {
-		rl.on('line', (line) => {
-			if (line === 'exit' || line === 'q') {
-				port.close();
-				process.exit(0);
-			} else {
-				port.write(line)
-				if (argv.crlf) { 
-					port.write('\r\n');
-				}
-			}
-		});
-	})
+	.then(port => { processLine(port); })
+	.catch(err => { 
+		console.error('Error: ' + err);
+		process.exit(1);
+	});
+} else if (argv.name) {
+	getPortsP()
+	.then(ports => connectNameP(ports, argv.name, argv.baud))
+	.then(port => { processLine(port); })
 	.catch(err => { 
 		console.error('Error: ' + err);
 		process.exit(1);
@@ -101,7 +125,34 @@ function getPortsP() {
 	});
 }
 
-let port;
+function connectNameP(ports, name, baud) {
+	console.log(baud)
+	return new Promise((resolve, reject) => {
+		let found = undefined;
+		ports.forEach(port => {
+			if (port.comName == name) {
+				found = port.comName;
+			}
+		});
+		if (found) {
+			port = new serialport(found, {
+				baudRate: baud,
+			    parser: serialport.parsers.readline('\r\n'),
+			}).on('open', () => {
+				console.log(`[${found}]: open`);
+			}).on('data', data => {
+				console.log(`[${found}]: data: ${data}`);
+			}).on('error', err => {
+				console.log(`[${found}]: error: ${err}`);
+			}).on('disconnect', () => {
+				console.log(`[${found}]: disconnect`);
+			});
+			resolve(port);
+		} else {
+			reject('Unable to locate PID ' + pid);
+		}
+	});
+}
 
 function connectPortP(ports, pid, baud) {
 	console.log(baud)
