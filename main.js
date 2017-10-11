@@ -3,6 +3,7 @@
 'use strict';
 
 const serialport = require('serialport');
+const parser = new serialport.parsers.Readline;
 const sprintf = require('sprintf');
 const readline = require('readline');
 const rl = readline.createInterface({
@@ -64,7 +65,11 @@ function processLine(port) {
 			port.close();
 			process.exit(0);
 		} else {
-			port.write(line)
+			// this is a workaround for the weird-ass macOS+L476+8B bug.
+			line = '' + line;
+			for (let i = 0; i < line.length; ++i) {
+				port.write(line[i]);
+			}
 			if (argv.crlf) { 
 				port.write('\r\n');
 			}
@@ -141,21 +146,14 @@ function connectNameP(ports, name, baud) {
 			}
 		});
 		if (found) {
-			port = new serialport(found, {
-				baudRate: baud,
-			    parser: serialport.parsers.readline('\r\n'),
-			}).on('open', () => {
+			port = new serialport(found, { baudRate: baud, });
+			port.pipe(parser);
+			parser.on('open', () => {
 				console.log(`[${found}]: open`);
-			}).on('data', data => {
-				console.log(`[${found}]: data: ${data}`);
-			}).on('error', err => {
-				console.log(`[${found}]: error: ${err}`);
-			}).on('disconnect', () => {
-				console.log(`[${found}]: disconnect`);
 			});
 			resolve(port);
 		} else {
-			reject('Unable to locate PID ' + pid);
+			reject('Unable to locate name ' + name);
 		}
 	});
 }
@@ -170,17 +168,10 @@ function connectPortP(ports, pid, baud) {
 			}
 		});
 		if (found) {
-			port = new serialport(found, {
-				baudRate: baud,
-			    parser: serialport.parsers.readline('\r\n'),
-			}).on('open', () => {
-				console.log(`[${found}]: open`);
-			}).on('data', data => {
+			port = new serialport(found, { baudRate: baud, });
+			port.pipe(parser);
+			parser.on('data', data => {
 				console.log(`[${found}]: data: ${data}`);
-			}).on('error', err => {
-				console.log(`[${found}]: error: ${err}`);
-			}).on('disconnect', () => {
-				console.log(`[${found}]: disconnect`);
 			});
 			resolve(port);
 		} else {
