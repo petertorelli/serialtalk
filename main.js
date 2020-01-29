@@ -41,7 +41,7 @@ const argv = require('yargs')
 			throw err;
 		}
 		console.error('Error: ' + msg);
-		process.exit(1);
+		process.exit(1)
 	})
 	.exitProcess(true)
 	.help('h')
@@ -101,7 +101,7 @@ const rl = readline.createInterface({
     output: process.stdout,
     prompt: '',
 })
-.on('line', (line) => {
+.on('line', line => {
 	if (line === 'exit' || line === 'q') {
 		PORT.close();
 		process.exit(0);
@@ -113,10 +113,10 @@ const rl = readline.createInterface({
 				if (err) {
 					console.error(err)
 				}
-			});
+			})
 		}
 		if (argv.crlf) { 
-			PORT.write('\r\n');
+			PORT.write('\r\n')
 		}
 	}
 })
