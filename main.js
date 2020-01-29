@@ -48,7 +48,6 @@ const argv = require('yargs')
 	.alias('h', 'help')
 	.argv
 
-
 if (argv.list) {
 	SerialPort.list()
 	.then(ports => {
@@ -72,6 +71,7 @@ if (argv.list) {
 				))
 			}
 		})
+		process.exit(0);
 	})
 	.catch(err => {
 		console.error(err)
@@ -103,8 +103,8 @@ const rl = readline.createInterface({
 })
 .on('line', line => {
 	if (line === 'exit' || line === 'q') {
-		PORT.close();
-		process.exit(0);
+		PORT.close()
+		process.exit(0)
 	} else {
 		// TODO: Need a Tx delay per char for some devices (e.g., STLink)
 		line = '' + line;
@@ -122,7 +122,7 @@ const rl = readline.createInterface({
 })
 .on('SIGINT', () => {
 	console.log('CTRL-C')
-	if (PORT.isOpen) {
+	if (PORT && PORT.isOpen) {
 		console.log('Closing port.')
 		PORT.close()
 		process.exit()
