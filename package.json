@@ -1,12 +1,26 @@
 {
   "name": "serialtalk",
   "version": "1.0.0",
-  "description": "Node.JS super simple terminal",
+  "description": "A very simple way to interact with a serial device via text commands. Connect to a device by its PID or port name. End the process by typing `exit` or `q`.",
   "main": "main.js",
-  "author": "Peter J. Torelli",
   "dependencies": {
-    "serialport": "^5.0.0",
+    "serialport": "^8.0.6",
     "sprintf": "^0.1.5",
-    "yargs": "^7.0.2"
-  }
+    "yargs": "^13.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/petertorelli/serialtalk.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/petertorelli/serialtalk/issues"
+  },
+  "homepage": "https://github.com/petertorelli/serialtalk#readme"
 }
