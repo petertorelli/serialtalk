@@ -87,19 +87,22 @@ if (argv.list) {
 			console.log('Port is open.')
 		}
 	})
+	PORT.on('close', () => {
+		process.exit(0)
+	})
 	PORT.on('error', err => {
 		console.error('SerialPort Error:', err)
 	})
-	PARSER = PORT.pipe(new Readline({ delimiter: '\r\n' }))
+	PARSER = PORT.pipe(new Readline({ delimiter: '\n' }))
 	PARSER.on('data', data => {
 		console.log(data)
 	})
 }
 
 const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    prompt: '',
+	input: process.stdin,
+	output: process.stdout,
+	prompt: '',
 })
 .on('line', line => {
 	if (line === 'exit' || line === 'q') {
@@ -121,10 +124,15 @@ const rl = readline.createInterface({
 	}
 })
 .on('SIGINT', () => {
+	process.emit('SIGINT')
+})
+
+process.on('SIGINT', () => {
 	console.log('CTRL-C')
 	if (PORT && PORT.isOpen) {
 		console.log('Closing port.')
-		PORT.close()
+		PORT.close(() => process.exit)
+	} else {
 		process.exit()
 	}
 })
